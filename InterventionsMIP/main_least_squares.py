@@ -1,11 +1,8 @@
-import pdb
-pdb.set_trace()
 if __name__ == '__main__':
     import datetime as dt
     import multiprocessing as mp
     from utils import parse_arguments
     from InterventionsMIP import load_config_file, logger, change_paths
-    
     # Parse arguments
     args = parse_arguments()
     # Load config file
@@ -15,7 +12,7 @@ if __name__ == '__main__':
     
     from instances import load_instance, load_tiers, load_seeds
     #from threshold_policy import policy_search, multi_tier_objective
-    from least_squares_fit_fixed_time import run_fit
+    from least_squares_fit import run_fit
     #from policies import MultiTierPolicy as MTP
     from policy_search_functions import policy_search, capacity_policy_search
     from objective_functions import multi_tier_objective, multi_tier_objective_ACS
@@ -73,9 +70,6 @@ if __name__ == '__main__':
     task_str = str(selected_policy) if selected_policy is not None else f'opt{len(tiers.tier)}'
     instance_name = f'{args.f_config[:-5]}_{args.t[:-5]}_{task_str}_rl{str(args.rl)}'
     
-    #logger.info('============================================================')
-    #logger.info(f'Instance name: {instance_name}')
-    
     # read in the policy upper bound
     if args.pub is not None:
         policy_ub = eval(args.pub)
@@ -100,8 +94,10 @@ if __name__ == '__main__':
                            policy_field=args.field,
                            policy_ub=policy_ub,
                            method="lsq")
-    
-    
-    file_path = instance.path_to_data  / 'transmission_new.csv'
-    transmisison.to_csv('/Users/ozgesurer/Desktop/GitHub_Folders/COVID19_CAOE/InterventionsMIP/instances/austin/transmission_new.csv', index = False)
-    #transmisison.to_csv(r'file_path', index = False)
+#import sys
+#sys.path.append("/Users/ozgesurer/Desktop/Github_Folders/COVID_Staged_Alert/")
+#sys.path.append("/Users/ozgesurer/Desktop/Github_Folders/COVID_Staged_Alert/InterventionsMIP")
+
+#runfile('/Users/ozgesurer/Desktop/Github_Folders/COVID_Staged_Alert/InterventionsMIP/main_least_squares.py', 'austin -f setup_data_Final_lsq.json -t tiers5_opt_Final.json -train_reps 1 -test_reps 1 -f_config austin_test_IHT.json -n_proc 1 -gt [-1,0,5,20,50] -tr transmission_Final_lsq.csv -hos austin_real_hosp_lsq.csv')
+
+#runfile('/Users/ozgesurer/Desktop/Github_Folders/COVID_Staged_Alert/InterventionsMIP/main_least_squares.py', 'houston -f setup_data_Final_lsq.json -t tiers5_opt_Final.json -train_reps 1 -test_reps 1 -f_config houston_test_IHT.json -n_proc 1 -gt [-1,0,5,20,50] -tr transmission_Final_lsq.csv -hos houston_real_hosp_lsq.csv')

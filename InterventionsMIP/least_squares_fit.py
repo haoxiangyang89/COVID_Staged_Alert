@@ -43,9 +43,7 @@ def deterministic_path(instance,
                        after_tiers=[0,1,2,3,4], 
                        policy_field="IYIH", 
                        policy_ub=None):
-    '''
-    TODO: Write proper docs
-    '''
+
     fixed_TR = list(filter(None, instance.cal.fixed_transmission_reduction))
     tier_TR = [item['transmission_reduction'] for item in tiers]
     uniquePS = sorted(np.unique(np.append(fixed_TR, np.unique(tier_TR))))
@@ -72,7 +70,6 @@ def deterministic_path(instance,
                                         policy_ub=policy_ub)
     # Launch parallel simulation
     all_outputs = simulate_p(mp_pool, sim_configs)
-    logger.info(f'Simulated candidates: {len(all_outputs)}: {profile_log["simulate_p"]}')
     
     if len(all_outputs) == 1:
         # Skip search if there is only one candidate
@@ -87,7 +84,7 @@ def residual_error(x_beta, **kwargs):
     hosp_ad = kwargs['hosp_ad']
     real_icu = kwargs['real_icu']
     
-    #############Cahnge the transmission reduction and cocconing accordingly
+    #Change the transmission reduction and cocconing accordingly
     beta = [x_beta[0], x_beta[1], x_beta[2], x_beta[3], x_beta[4]]
     cocoon = [0, x_beta[1], x_beta[1], x_beta[3], x_beta[4]]
 
@@ -157,14 +154,11 @@ def residual_error(x_beta, **kwargs):
     task_str = str(selected_policy) if selected_policy is not None else f'opt{len(tiers.tier)}'
     instance_name = 'det_path'
     
-    logger.info('============================================================')
-    logger.info(f'Instance name: {instance_name}')
-    
     # read in the policy upper bound
     policy_ub = None
 
+    # Set alphas
     instance.epi.alpha1 = x_beta[5]
-    
     instance.epi.alpha2 = x_beta[6]
     
     sim_output = deterministic_path(instance=instance,
@@ -216,41 +210,12 @@ def residual_error(x_beta, **kwargs):
         residual_error_IH.extend(residual_error_ICU)
     
     return residual_error_IH 
-
-def objective(x, kwargs):
-    errors = residual_error(x, kwargs)
-    print(0.5*sum(np.square(errors)))
-    return 0.5*round(sum(np.square(errors)), 4)
     
 def least_squares_fit(initial_guess, kwargs):
     # Function that runs the least squares fit
     result = least_squares(residual_error, initial_guess, bounds = ([0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1]), method='trf', kwargs = kwargs)
     return result 
 
-def trust_const_fit(initial_guess, kwargs):
-    linear_constraint = LinearConstraint([[1, 0, 0, 0, -1, 0, 0, 0], [0, 1, 0, 0, 0, -1, 0, 0], [0, 0, 1, 0, 0, 0, -1, 0], [0, 0, 0, 1, 0, 0, 0, -1]], [-np.inf, -np.inf, -np.inf, -np.inf], [0, 0, 0, 0])
-    linear_constraint_b = LinearConstraint([[1, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0], 
-                                            [0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0], 
-                                            [0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 1]], 
-                                           [0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1])
-
-    result = minimize(objective, initial_guess, method='trust-constr', constraints=[linear_constraint_b, linear_constraint], tol = 1e-1, 
-                      options={'xtol': 1e-01,'maxiter': 1000},
-                      args = kwargs)
-    return result 
-
-def cobyla_fit(initial_guess, kwargs):
-    bounds=((0, 1),(0, 1),(0, 1))
-    #construct the bounds in the form of constraints
-    cons = []
-    for factor in range(len(bounds)):
-        lower, upper = bounds[factor]
-        l = {'type': 'ineq', 'fun': lambda x, lb=lower, i=factor: x[i] - lb}
-        u = {'type': 'ineq', 'fun': lambda x, ub=upper, i=factor: ub - x[i]}
-    cons.append(l)
-    cons.append(u)
-    result = minimize(objective, initial_guess, method='COBYLA', constraints=cons, tol = 1e-6, args = kwargs, options={'rhobeg': 0.01})
-    return result 
     
 def run_fit(instance,
             tiers,
@@ -271,12 +236,11 @@ def run_fit(instance,
             method="lsq"):
     
     if instance.city == 'austin':
-        daily_admission_file_path = instance.path_to_data  / "austin_hosp_ad_lsq.csv"
         start_date = dt.datetime(2020,2,28)
+        daily_admission_file_path = instance.path_to_data  / "austin_hosp_ad_lsq.csv"
         hosp_ad = read_hosp(daily_admission_file_path, start_date, "admits")
         
         daily_icu_file_path = instance.path_to_data  / "austin_real_icu_lsq.csv"
-        start_date = dt.datetime(2020,2,28)
         real_icu = read_hosp(daily_icu_file_path, start_date)  
 
         #time blocks
@@ -284,6 +248,7 @@ def run_fit(instance,
 
         #initial guess
         x = np.array([0, 0.74, 0.8, 0.8, 0.8, 0.8, 0.8])        
+   
     elif instance.city == 'houston':
         hosp_ad = None
         daily_icu_file_path = instance.path_to_data  / "houston_real_icu_lsq.csv"
@@ -291,10 +256,10 @@ def run_fit(instance,
         real_icu = read_hosp(daily_icu_file_path, start_date)   
         
         #time blocks
-        change_dates = [dt.date(2020, 2, 15), dt.date(2020, 3, 24), dt.date(2020, 5, 21), dt.date(2020, 6, 26), dt.date(2020, 7, 10)]
+        change_dates = [dt.date(2020, 2, 15), dt.date(2020, 3, 24), dt.date(2020, 5, 21), dt.date(2020, 6, 26), dt.date(2020, 8, 20), dt.date(2020, 10, 8)]
     
         #initial guess
-        x = np.array([0, 0.74, 0.8, 0.8, 0.8, 0.8])
+        x = np.array([0, 0.74, 0.8, 0.8, 0.8, 0.8, 0.8])
 
     kwargs  = {'change_dates' : change_dates,
                'instance' : instance,
@@ -302,18 +267,13 @@ def run_fit(instance,
                'hosp_ad': hosp_ad,
                'real_icu': real_icu
                }
+    
     ########## ########## ##########
-    #Run least squares and choose a method
-    if(method == "lsq"):
-        res = least_squares_fit(x, kwargs)
-        SSE = res.cost
-    elif(method == "trust"):
-        res = trust_const_fit(x, kwargs)
-        SSE = res.fun
-    elif(method == "COBYLA"):
-        res = cobyla_fit(x, kwargs)
-        SSE = res.fun
+    #Run least squares
+    res = least_squares_fit(x, kwargs)
+    SSE = res.cost
     ########## ########## ##########
+    
     #Get variable value
     opt_tr_reduction = res.x
     contact_reduction = opt_tr_reduction[0:5]
@@ -330,7 +290,7 @@ def run_fit(instance,
     
     print('alpha1=', opt_tr_reduction[5])
     print('alpha2=', opt_tr_reduction[6])
-    #Save optimized values to transmission_new.csv
+
     tr_reduc = []
     date_list = []
     cocoon_reduc = []
@@ -344,9 +304,3 @@ def run_fit(instance,
 
     return df_transmission
  
-    
-#runfile('/Users/ozgesurer/Desktop/COVID19_CAOE/InterventionsMIP/main_least_squares.py', 
-#        'austin -f setup_data_Final_lsq.json -t tiers5_opt_Final.json -train_reps 1 -test_reps 1 -f_config austin_test_IHT.json -n_proc 1 -gt [-1,0,5,20,50] -tr transmission_Final_lsq.csv -hos austin_real_hosp_lsq.csv')
-    
-# runfile('/Users/ozgesurer/Desktop/COVID19_CAOE/InterventionsMIP/main_least_squares.py', 
-#'houston -f setup_data_Final_lsq.json -t tiers5_opt_Final.json -train_reps 1 -test_reps 1 -f_config houston_test_IHT.json -n_proc 1 -gt [-1,0,5,20,50] -tr transmission_Final_lsq.csv -hos houston_real_hosp_lsq.csv')
