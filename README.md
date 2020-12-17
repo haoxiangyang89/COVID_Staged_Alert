@@ -38,11 +38,18 @@ attempt to minimize the total number of days that a city is in strict levels.
 - Calander utils class (SimCalendar)
 
 ## epi_parameters.py
-- Class EpiSetup to characterize the simulation and recompute contact matrices as needed.
+- Class EpiSetup characterizes the simulation and recompute contact matrices as needed.
 
 ## intervention.py
-- Class intervention defining its properties and used in the simulator.
+- Class intervention defines its properties and used in the simulator.
 - Helper function to create multiple interventions
+
+## policies.py
+- Class MultiTierPolicy and MultiTierPolicy_ACS defines policy given the thresholds and will have functions to obtain corresponding tier given trigger statistics
+- Functions to build a list of trial policies
+
+## objective_functions.py
+- Construct the objective function for a simulation path
 
 ## utils.py
 - Timing function
@@ -76,6 +83,7 @@ instances/houston/
 ## main_downsampling.py
 
 - Donwsampling procedure (algorithm 1)
+- Call downsampling.py
 
 Related input files:
 
@@ -86,6 +94,7 @@ instances/austin/
 ## main_multitier.py
 
 - script to obtain optimal trigger policy
+- Call policy_search_functions.py
 
 Related input files:
 
@@ -94,8 +103,27 @@ instances/austin/
 * transmission_Final.csv
 
 ## main_multitier_acs.py
+
 - script to obtain optimal trigger policy and ACS setup threshold
+- Call policy_search_functions.py
 
 instances/austin/
 * tiers5_acs_Final.json
 * transmission_Final_orange25_yellow75.csv
+
+# Structure of the reporting scripts
+
+## plotting.py
+
+- Plot the figures used in the manuscript
+* ICU, general wards heads-in-beds
+* Total daily admission
+* Stacked plots
+
+## output_processors.py
+
+- Obtain statistics based on simulation results in .p file
+
+## report_pdf.py
+
+- generate pdf file by filling in statistics in the .tex template and compile
