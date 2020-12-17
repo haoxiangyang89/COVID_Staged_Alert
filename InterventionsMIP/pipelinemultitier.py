@@ -326,40 +326,41 @@ def icu_pipeline(file_path, instance_name, real_hosp=None, real_admit=None, hosp
                                   cap_path_id = central_id_path,
                                   history_white = True)
     
-    if hosp_beds_list is None:
-        hosp_beds_list = [instance.hosp_beds]
-    if icu_beds_list is None:
-        icu_beds_list = [instance.icu]
-    build_report_tiers(instance_name,
-                       instance,
-                       best_policy,
-                       profiles,
-                       IHD_plot2,
-                       IYIH_plot2,
-                       IHD_plot,
-                       IHT_stacked_plot,
-                       config=config,
-                       T=T,
-                       hosp_beds=hosp_beds_list[0],
-                       icu_beds=icu_beds_list[0],
-                       interventions=interventions,
-                       policy_params=best_params,
-                       stat_start=instance.cal.calendar[t_start+1]
-                       )
+    # if hosp_beds_list is None:
+    #     hosp_beds_list = [instance.hosp_beds]
+    # if icu_beds_list is None:
+    #     icu_beds_list = [instance.icu]
+    # build_report_tiers(instance_name,
+    #                    instance,
+    #                    best_policy,
+    #                    profiles,
+    #                    IHD_plot2,
+    #                    IYIH_plot2,
+    #                    IHD_plot,
+    #                    IHT_stacked_plot,
+    #                    config=config,
+    #                    T=T,
+    #                    hosp_beds=hosp_beds_list[0],
+    #                    icu_beds=icu_beds_list[0],
+    #                    interventions=interventions,
+    #                    policy_params=best_params,
+    #                    stat_start=instance.cal.calendar[t_start+1]
+    #                    )
 
 if __name__ == "__main__":
     # list all .p files from the output folder
-    folder_name = "11_13_Det"
-    fileList = os.listdir("output/{}".format(folder_name))
-    #fileList = os.listdir("output")
+    #folder_name = "11_13_Det"
+    #fileList = os.listdir("output/{}".format(folder_name))
+    fileList = os.listdir("output")
     for instance_raw in fileList:
         if ".p" in instance_raw:
-            if "11_1" in instance_raw and "11_13" not in instance_raw:
-                end_history = dt(2020,11,1)
-            elif "10_1" in instance_raw:
-                end_history = dt(2020,10,1)
-            else:
-                end_history = dt(2020,11,13)
+            end_history = dt(2020,11,13)
+            #if "11_1" in instance_raw and "11_13" not in instance_raw:
+            #    end_history = dt(2020,11,1)
+            #elif "10_1" in instance_raw:
+            #    end_history = dt(2020,10,1)
+            #else:
+            #    end_history = dt(2020,11,13)
             if "austin" in instance_raw:
                 file_path = "instances/austin/austin_real_hosp_updated.csv"
                 start_date = dt(2020,2,28)
@@ -397,11 +398,11 @@ if __name__ == "__main__":
                 hosp_beds_list = [4500]
                 icu_beds_list = [1000]
                 t_start = (end_history - start_date).days
-                central_id_path = 65
+                central_id_path = 0
                 
             instance_name = instance_raw[:-2]
-            path_file = f'output/{folder_name}/{instance_name}.p'
-            #path_file = f'output/{instance_name}.p'
+            #path_file = f'output/{folder_name}/{instance_name}.p'
+            path_file = f'output/{instance_name}.p'
             #multi_tier_pipeline(path_file, instance_name, real_hosp, hosp_ad, hosp_beds_list)
             icu_pipeline(path_file, instance_name, real_hosp, hosp_ad, hosp_beds_list, icu_beds_list, real_icu,
                           iht_limit, icu_limit, toiht_limit, toicu_limit, t_start, None, False, central_id_path, central_id_path)

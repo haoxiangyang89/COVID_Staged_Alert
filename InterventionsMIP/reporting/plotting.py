@@ -777,7 +777,7 @@ def plot_multi_tier_sims(instance_name,
     plt.subplots_adjust(hspace=0)
     plots_left_right = plot_left_axis + plot_right_axis
     plot_filename = plots_path / f'scratch_{instance_name}_{"".join(plots_left_right)}.pdf'
-    plt.savefig(plot_filename)
+    #plt.savefig(plot_filename)
     if show:
         plt.show()
     plt.close()

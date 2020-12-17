@@ -21,3 +21,17 @@ instances/houston/
 * houston_real_hosp_lsq.csv
 * transmission_Final_lsq.csv
 * setup_data_Final_lsq.json
+
+## Donwsampling procedure (algorithm 1)
+
+instances/austin/
+* tiers5_ds_Final.json
+* austin_test_IHT_ds.json
+
+instances/houston/
+* tiers5_ds_Final.json
+* houston_test_IHT_ds.json
+
+Script to run:
+
+* main_downsampling.py

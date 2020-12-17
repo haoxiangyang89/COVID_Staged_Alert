@@ -46,7 +46,8 @@
         "daily_cost": 10000,
         "color": "red",
         "candidate_thresholds": [
-            120
+            120,
+            130
         ]
     }
     ]
