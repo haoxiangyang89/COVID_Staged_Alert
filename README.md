@@ -127,3 +127,7 @@ instances/austin/
 ## report_pdf.py
 
 - generate pdf file by filling in statistics in the .tex template and compile
+
+# Demo
+
+Run the bash file test.sh in Demo folder to obtain an optimal trigger and generate visualization and a report
