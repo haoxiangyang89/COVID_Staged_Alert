@@ -6,6 +6,8 @@ The algorithm simulates a COVID-19 epidemic for Austin, TX, and determines trigg
 to enact social distancing orders to avoid exceeding hospital capacity. Chosen triggers
 attempt to minimize the total number of days that a city is in strict levels.
 
+All codes are tested on MacOS but should work on Windows and Linux.
+
 ## Installation and running the code
 - Download and unzip the code to a local path (e.g., .../COVID_Staged_Alert)
 - Add both /COVID_Staged_Alert and /COVID_Staged_Alert/InterventionsMIP to your $PYTHONPATH
@@ -14,6 +16,7 @@ attempt to minimize the total number of days that a city is in strict levels.
 * pandas
 * numpy
 * scipy
+- The installation should take less than a minute.
 
 
 ## Guidelines for contributing
@@ -131,3 +134,7 @@ instances/austin/
 # Demo
 
 Run the bash file test.sh in Demo folder to obtain an optimal trigger and generate visualization and a report
+- The .p file (data file) will be generated in /output
+- The plots will be generated under /plots
+- The report will be generated under /reporting/reports
+- The run time should be within a minutes
